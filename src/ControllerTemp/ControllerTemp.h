@@ -48,6 +48,7 @@ class ControllerTemp {
     ControllerSensor getSensor(int _sensorIndex);
 
   private:
+    OneWire myWire;
     uint8_t pin;
     DallasTemperature dTemp;
     ControllerSensor sensors[MAX_SENSORS];

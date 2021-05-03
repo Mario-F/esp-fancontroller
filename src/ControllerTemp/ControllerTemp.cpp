@@ -10,6 +10,7 @@ ControllerTemp::ControllerTemp() {};
 ControllerTemp::ControllerTemp(uint8_t _pin) {
   // Init DallasTemp
   pin = _pin;
+  myWire = OneWire(_pin);
 
   // defaults
   lastTempPull = millis();
@@ -33,8 +34,7 @@ void ControllerTemp::setSampleRateAdvance(int _sampleRateAdvance) {
 }
 
 void ControllerTemp::initSensors() {
-  OneWire oneWire(pin);
-  dTemp = DallasTemperature(&oneWire);
+  dTemp = DallasTemperature(&myWire);
 
   dTemp.begin();
   deviceCount = dTemp.getDeviceCount();
