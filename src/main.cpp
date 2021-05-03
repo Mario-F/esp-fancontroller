@@ -197,9 +197,10 @@ void setup() {
   Serial.print("Got IP: ");  Serial.println(WiFi.localIP());
 
   // Init temp sensors and set in conf
+  #ifdef DEBUGMODE
   temps.setVerbose(true);
+  #endif
   temps.initSensors();
-  // TODO: Debugging stuff
   temps.setSampleRate(14200);
   temps.setSampleRateAdvance(1870);
   while(temps.getDeviceCount() == 0) {
