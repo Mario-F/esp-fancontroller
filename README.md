@@ -6,7 +6,7 @@ Fancontrol: https://www.youtube.com/watch?v=UJK2JF8wOu8
 
 ## Quickstart
 
-Create a `src/Crendials.h` with your wifi credentials, use `src/Crendials.h.tpl`
+Create a `src/Credentials.h` with your wifi credentials, use `src/Credentials.h.tpl`
 
 On remote Host:
 
