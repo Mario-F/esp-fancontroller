@@ -9,11 +9,12 @@
 #include <uri/UriRegex.h>
 #include "Credentials.h"
 #include "ControllerTemp/ControllerTemp.h"
+#include "ControllerFan/ControllerFan.h"
 
 /* Set pin usage */
 #define ONE_WIRE_BUS D2
-#define FAN_SPEEDIN D3
-#define FAN_CONTROL D8
+#define FAN_RPM_INPUT D3
+#define FAN_PWM_OUTPUT D8
 
 /* Set some variables */
 #define CONFIG_WRITE_FLAG 18
@@ -23,6 +24,7 @@ const int eeAddressConfig = 1;
 /* Define Objects */
 ESP8266WebServer server(80);
 ControllerTemp temps(ONE_WIRE_BUS);
+ControllerFan fana(FAN_RPM_INPUT, FAN_PWM_OUTPUT);
 
 /* Define structs*/
 struct Sensor {
@@ -40,43 +42,6 @@ Config globalConfig;
 /* Define and Setup W-Lan */
 const char* ssid = WIFI_SSID;  // Enter SSID here
 const char* password = WIFI_PW;  //Enter Password here
-
-
-/*
-Setup and define FAN FUNCTIONS
-*/
-int fanspeed = 1023;
-int fanSpeedCounter = 0;
-unsigned long fanSpeedTimer;
-int actFanSpeed = 0;
-
-void calc_fanSpeed() {
-  int timePassed = (millis() - fanSpeedTimer);
-  if(timePassed > 4000) {
-    // Set Fanspeed
-    actFanSpeed = (fanSpeedCounter * 15 / 2);
-    Serial.print("FanSpeed - Time passed ");
-    Serial.print(timePassed);
-    Serial.print("ms, with Fanspeed: ");
-    Serial.print(actFanSpeed);
-    Serial.println(" rpm");
-
-    // Reset loop
-    fanSpeedTimer = millis();
-    fanSpeedCounter = 0;
-  }
-}
-
-ICACHE_RAM_ATTR void counter() {
-  fanSpeedCounter++;
-}
-
-void set_fan(int speed) {
-  Serial.print("(set_fan) Set Fanspeed: "); Serial.println(speed);
-  fanspeed = speed;
-  analogWriteFreq(22000);
-  analogWrite(FAN_CONTROL, fanspeed);
-}
 
 
 /*
@@ -101,10 +66,10 @@ void handle_Temps() {
 }
 
 void handle_Speeds() {
-  Serial.print("Fanspeed is: "); Serial.print(actFanSpeed); Serial.println(" rpm.");
+  Serial.print("Fanspeed is: "); Serial.print(fana.getSpeed()); Serial.println(" rpm.");
   String retRes = "[";
   retRes += "{\"type\":\"fan\",\"rpm\":";
-  retRes += actFanSpeed;
+  retRes += fana.getRPM();
   retRes += "}]";
   server.send(200, "application/json", retRes); 
 }
@@ -174,17 +139,13 @@ void setup() {
   /* Initalize config */
   loadConfiguration(globalConfig);
 
-  /* Setup FAN-Pin and start 100% as failsave */
-  pinMode(FAN_CONTROL, OUTPUT);
-  set_fan(fanspeed);
+  /* Setup FanController */
+  #ifdef DEBUGMODE
+  fana.setVerbose(true);
+  #endif
 
   Serial.println("Connecting to ");
   Serial.println(ssid);
-
-  // Setup Fan Read speeds
-  pinMode(FAN_SPEEDIN, INPUT);
-  attachInterrupt(digitalPinToInterrupt(FAN_SPEEDIN), counter, RISING);
-  Serial.println("Fanspeed is setup");
 
   // Connect and handle wifi
   WiFi.begin(ssid, password);
@@ -214,7 +175,7 @@ void setup() {
   server.on(UriBraces("/fan/{}"), []() {
     String newspeedS = server.pathArg(0);
     int newspeed = (int)newspeedS.toInt();
-    set_fan(newspeed);
+    fana.setSpeed(newspeed);
     Serial.println("FAN SPEED: '" + newspeedS + "'");
     server.send(200, "text/plain", "FAN SPEED UPDATED: '" + newspeedS + "'");
   });
@@ -225,6 +186,6 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  calc_fanSpeed();
+  fana.loop();
   temps.loop();
 }
