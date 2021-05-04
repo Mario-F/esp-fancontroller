@@ -41,7 +41,7 @@ class ControllerTemp {
     void setVerbose(bool _flag);
     void setSampleRate(int _sampleRate);
     void setSampleRateAdvance(int _sampleRateAdvance);
-    void initSensors(void);
+    void initSensors(boolean waitForSensors);
     void resetLoop(void);
     void loop(void);
     int getDeviceCount(void);

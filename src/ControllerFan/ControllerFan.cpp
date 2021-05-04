@@ -43,9 +43,9 @@ int ControllerFan::getRPM() {
 
 void ControllerFan::loop() {
   int timePassed = (millis() - fanRPMTimer);
-  if(timePassed > 4000) {
+  if(timePassed > 2000) {
     // Set Fanspeed
-    fanActRPM = (fanRPMCounter * 15 / 2);
+    fanActRPM = (fanRPMCounter * 30 / 2);
 
     if(verbose) {
       Serial.print(LOG_PREFIX"(loop) FanSpeed - Time passed ");

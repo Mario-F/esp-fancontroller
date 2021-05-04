@@ -33,11 +33,16 @@ void ControllerTemp::setSampleRateAdvance(int _sampleRateAdvance) {
   sampleRateAdvance = _sampleRateAdvance;
 }
 
-void ControllerTemp::initSensors() {
+void ControllerTemp::initSensors(boolean waitForSensors) {
   dTemp = DallasTemperature(&myWire);
 
   dTemp.begin();
   deviceCount = dTemp.getDeviceCount();
+  while(waitForSensors && deviceCount <= 0) {
+    Serial.println(LOG_PREFIX"(init) No temp sensors found try again after 1sec");
+    delay(1000);
+    deviceCount = dTemp.getDeviceCount();
+  }
   if(verbose) {
     Serial.print(LOG_PREFIX"(init) Found "); Serial.print(deviceCount); Serial.println(" Devices.");
   }
