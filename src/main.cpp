@@ -1,7 +1,6 @@
 /*
  * Fancontroller MAIN File
  */
-#include <EEPROM.h>
 #include <ArduinoJson.h>
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
@@ -16,28 +15,10 @@
 #define FAN_RPM_INPUT D3
 #define FAN_PWM_OUTPUT D8
 
-/* Set some variables */
-#define CONFIG_WRITE_FLAG 18
-const int eeAddressConfigReset = 0;
-const int eeAddressConfig = 1;
-
 /* Define Objects */
 ESP8266WebServer server(80);
 ControllerTemp temps(ONE_WIRE_BUS);
 ControllerFan fana(FAN_RPM_INPUT, FAN_PWM_OUTPUT);
-
-/* Define structs*/
-struct Sensor {
-  String DeviceAddress;
-  String DeviceName;
-};
-struct Config {
-  float TargetTemp;
-  int DefaultFan;
-  String SourceSensor;
-  Sensor Sensors[MAX_SENSORS];
-};
-Config globalConfig;
 
 /* Define and Setup W-Lan */
 const char* ssid = WIFI_SSID;  // Enter SSID here
@@ -78,66 +59,14 @@ void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
 
-/*
-Config handling
-*/
-void loadConfiguration(Config &config) {
-  int resetConfig = EEPROM.read(eeAddressConfigReset);
-
-  if(resetConfig != CONFIG_WRITE_FLAG) {
-    Serial.println("ConfigReset is set, use default values");
-    config.TargetTemp = 25;
-    config.DefaultFan = 20;
-    config.SourceSensor = "first"; // use first sensor if not defined
-  } else {
-    Serial.println("Read config from EEPROM");
-    EEPROM.get(eeAddressConfig, config);
-  }
-
-  Serial.println("Config read...:");
-  Serial.print("TargetTemp: "); Serial.println(config.TargetTemp);
-  Serial.print("SourceSensor: "); Serial.println(config.SourceSensor);
-  Serial.print("DefaultFan: "); Serial.println(config.DefaultFan);
-  for(int i = 0; i < MAX_SENSORS; i++) {
-    Serial.print("Sensor -> ");
-    Serial.print(config.Sensors[i].DeviceName);
-    Serial.print(":");
-    Serial.println(config.Sensors[i].DeviceAddress);
-  }
-  Serial.println("Config end.");
-}
-
-void saveConfiguration(Config &config) {
-  EEPROM.put(eeAddressConfig, config);
-  EEPROM.write(eeAddressConfigReset, CONFIG_WRITE_FLAG);
-  Serial.println("Config saved to EEPROM!");
-}
-
-void resetConfiguration() {
-  EEPROM.write(eeAddressConfigReset, 0);
-  EEPROM.commit();
-  Serial.println("Set config reset flag, restarting now!");
-  ESP.restart();
-}
-
 
 /*
 Main components
 */
 void setup() {
-  __asm__("nop\n\t");
-  __asm__("nop\n\t");
-  delay(1000);
-  Serial.begin(115200);
-  Serial.println();
-  Serial.println("Start setup!");
-  delay(1000);
-
-  /* Initialize EEPROM */
-  EEPROM.begin(512);
-
-  /* Initalize config */
-  loadConfiguration(globalConfig);
+  // Try to counter some boot problems
+  __asm__("nop\n\t"); delay(1000); __asm__("nop\n\t");
+  Serial.begin(115200); Serial.println(); Serial.println("Start setup!");
 
   /* Setup FanController */
   #ifdef DEBUGMODE
