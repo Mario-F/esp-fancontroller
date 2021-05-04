@@ -106,11 +106,13 @@ void ControllerTemp::loop() {
       } else {
         sensors[i].setError();
       }
-      Serial.print(LOG_PREFIX"(Loop-Conversion) Convert Sensor ");
-      Serial.print(sensors[i].getName() + ", Temp: ");
-      Serial.print(sensors[i].getTemp());
-      Serial.print(" celsius, Errors: ");
-      Serial.println(sensors[i].getErrorCount());
+      if(verbose) {
+        Serial.print(LOG_PREFIX"(Loop-Conversion) Convert Sensor ");
+        Serial.print(sensors[i].getName() + ", Temp: ");
+        Serial.print(sensors[i].getTemp());
+        Serial.print(" celsius, Errors: ");
+        Serial.println(sensors[i].getErrorCount());
+      }
     }
 
     // Reset loop
