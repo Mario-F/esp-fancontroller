@@ -94,8 +94,8 @@ void setup() {
   Serial.print("IP: "); Serial.println(WiFi.localIP());
 
   /* Setup temp sensors */
-  temps.setSampleRate(8765);
-  temps.setSampleRateAdvance(1572);
+  temps.setSampleRate(5765);
+  temps.setSampleRateAdvance(1372);
   temps.initSensors(true);
 
   /* Setup Webserver handling */
