@@ -57,7 +57,6 @@ void handle_Temps() {
 }
 
 void handle_Speeds() {
-  Serial.print("Fanspeed is: "); Serial.print(fana.getSpeed()); Serial.println(" rpm.");
   String retRes = "[";
   retRes += "{\"type\":\"fan\",\"rpm\":";
   retRes += fana.getRPM();
