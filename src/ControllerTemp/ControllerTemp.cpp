@@ -61,7 +61,7 @@ void ControllerTemp::initSensors(boolean waitForSensors) {
       }
     sensors[i] = ControllerSensor(deviceAddress);
     if(verbose) {
-      Serial.print(LOG_PREFIX"(init) Got sensor "); Serial.println(sensors[i].getName());
+      Serial.print(LOG_PREFIX"(init) Got sensor "); Serial.println(sensors[i].getUID());
     }
   }
   dTemp.setWaitForConversion(false);
@@ -108,7 +108,7 @@ void ControllerTemp::loop() {
       }
       if(verbose) {
         Serial.print(LOG_PREFIX"(Loop-Conversion) Convert Sensor ");
-        Serial.print(sensors[i].getName() + ", Temp: ");
+        Serial.print(sensors[i].getUID() + ", Temp: ");
         Serial.print(sensors[i].getTemp());
         Serial.print(" celsius, Errors: ");
         Serial.println(sensors[i].getErrorCount());
@@ -142,7 +142,7 @@ ControllerSensor::ControllerSensor(DeviceAddress _deviceAddress) {
   errors = 0;
 }
 
-String ControllerSensor::getName() {
+String ControllerSensor::getUID() {
   return deviceAddressString;
 }
 

@@ -14,7 +14,7 @@ class ControllerSensor {
   public:
     ControllerSensor();
     ControllerSensor(DeviceAddress _deviceAddress);
-    String getName(void);
+    String getUID(void);
     void getAddress(DeviceAddress _deviceAddress);
     void setTemp(float temp);
     float getTemp(void);

@@ -45,7 +45,7 @@ void handle_Temps() {
     ControllerSensor sensor = temps.getSensor(i);
     DynamicJsonDocument jsonSensor(256);
     jsonSensor["type"] = "ds18b20";
-    jsonSensor["addr"] = sensor.getName();
+    jsonSensor["uid"] = sensor.getUID();
     jsonSensor["temp"] = sensor.getTemp();
     jsonSensor["errors"] = sensor.getErrorCount();
     jsonResponse.add(jsonSensor);
