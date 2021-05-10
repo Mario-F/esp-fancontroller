@@ -39,29 +39,32 @@ void handle_verbose() {
 }
 
 void handle_Temps() {
-  String retRes = "[";
+  DynamicJsonDocument jsonResponse(1024);
   int sensorCount = temps.getDeviceCount();
   for (int i = 0; i < sensorCount; i++) {
     ControllerSensor sensor = temps.getSensor(i);
-    retRes += "{\"type\":\"ds18b20\",\"addr\":\"";
-    retRes += sensor.getName();
-    retRes += "\",\"temp\":";
-    retRes += sensor.getTemp();
-    retRes += ",\"errors\":";
-    retRes += sensor.getErrorCount();
-    retRes += "}";
-    if (i+1 < sensorCount) retRes += ",";
+    DynamicJsonDocument jsonSensor(256);
+    jsonSensor["type"] = "ds18b20";
+    jsonSensor["addr"] = sensor.getName();
+    jsonSensor["temp"] = sensor.getTemp();
+    jsonSensor["errors"] = sensor.getErrorCount();
+    jsonResponse.add(jsonSensor);
   }
-  retRes += "]";
-  server.send(200, "application/json", retRes); 
+  String buf;
+  serializeJson(jsonResponse, buf);
+  server.send(200, "application/json", buf);
 }
 
 void handle_Speeds() {
-  String retRes = "[";
-  retRes += "{\"type\":\"fan\",\"rpm\":";
-  retRes += fana.getRPM();
-  retRes += "}]";
-  server.send(200, "application/json", retRes); 
+  DynamicJsonDocument jsonResponse(512);
+  DynamicJsonDocument singleFan(256);
+  singleFan["type"] = "fan";
+  singleFan["rpm"] = fana.getRPM();
+  singleFan["speed"] = fana.getSpeed();
+  jsonResponse.add(singleFan);
+  String buf;
+  serializeJson(jsonResponse, buf);
+  server.send(200, "application/json", buf);
 }
 
 void handle_NotFound(){
