@@ -38,6 +38,29 @@ void handle_verbose() {
   server.send(200, "text/plain", "New verbose status is: '" + String(newVerbose) + "'");
 }
 
+void handle_Status() {
+  DynamicJsonDocument jsonResponse(512);
+
+  DynamicJsonDocument wifiData(128);
+  wifiData["ip"] = WiFi.localIP().toString();
+  wifiData["gateway"] = WiFi.gatewayIP().toString();
+  wifiData["netmask"] = WiFi.subnetMask().toString();
+  wifiData["signal"] = WiFi.RSSI();
+  jsonResponse["wifi"] = wifiData;
+
+  DynamicJsonDocument chipData(128);
+  chipData["chipId"] = ESP.getChipId();
+  chipData["flashChipId"] = ESP.getFlashChipId();
+  chipData["flashChipSize"] = ESP.getFlashChipSize();
+  chipData["flashChipRealSize"] = ESP.getFlashChipRealSize();
+  chipData["freeHeap"] = ESP.getFreeHeap();
+  jsonResponse["chip"] = chipData;
+
+  String buf;
+  serializeJson(jsonResponse, buf);
+  server.send(200, "application/json", buf);
+}
+
 void handle_Temps() {
   DynamicJsonDocument jsonResponse(1024);
   int sensorCount = temps.getDeviceCount();
@@ -103,6 +126,7 @@ void setup() {
 
   /* Setup Webserver handling */
   server.on(UriBraces("/verbose/{}"), handle_verbose);
+  server.on("/status", handle_Status);
   server.on("/temps", handle_Temps);
   server.on("/fans", handle_Speeds);
   server.on(UriBraces("/fan/{}"), []() {
