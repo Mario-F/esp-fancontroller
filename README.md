@@ -20,6 +20,12 @@ Connect Monitor:
 pio remote device monitor -b 115200
 ```
 
+Upload Filesystem:
+
+```shell
+pio remote run -t uploadfs --force-remote
+```
+
 Upload and Flash remote:
 
 ```shell
