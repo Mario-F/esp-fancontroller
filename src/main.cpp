@@ -7,6 +7,7 @@
 #include <uri/UriBraces.h>
 #include <uri/UriRegex.h>
 #include "Credentials.h"
+#include "ConfigManager/ConfigManager.h"
 #include "ControllerTemp/ControllerTemp.h"
 #include "ControllerFan/ControllerFan.h"
 
@@ -139,6 +140,22 @@ void setup() {
   server.onNotFound(handle_NotFound);
   server.begin();
   Serial.println("HTTP server started");
+
+  /* Check LittleFS */
+  if(!LittleFS.begin()){
+    Serial.println("An Error has occurred while mounting LittleFS");
+    return;
+  }
+  File file = LittleFS.open("/test.txt", "r");
+  if(!file){
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+  Serial.println("File Content:");
+  while(file.available()){
+    Serial.write(file.read());
+  }
+  file.close();
 }
 
 void loop() {
