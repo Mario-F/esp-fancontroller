@@ -80,6 +80,11 @@ boolean ConfigManager::saveConfig() {
   return true;
 };
 
+void ConfigManager::setInstanceName(String name) {
+  _config.instanceName = name;
+  saveConfig();
+};
+
 void ConfigManager::setDefaultSpeed(int speed) {
   _config.defaultSpeed = speed;
   saveConfig();

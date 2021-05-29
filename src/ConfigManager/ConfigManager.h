@@ -32,6 +32,7 @@ class ConfigManager {
     static MainConfig getConfig();
     static boolean saveConfig();
 
+    static void setInstanceName(String name);
     static void setDefaultSpeed(int speed);
 
   private:

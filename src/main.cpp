@@ -150,6 +150,12 @@ void setup() {
     Serial.println("FAN SPEED: '" + newspeedS + "'");
     server.send(200, "text/plain", "FAN SPEED UPDATED: '" + newspeedS + "'");
   });
+  server.on(UriBraces("/name/{}"), []() {
+    String newName = server.pathArg(0);
+    ConfigManager::setInstanceName(newName);
+    Serial.print("New instance Name: "); Serial.println(newName);
+    server.send(200, "text/plain");
+  });
   server.onNotFound(handle_NotFound);
   server.begin();
   Serial.println("HTTP server started");
