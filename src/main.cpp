@@ -44,7 +44,6 @@ void handle_Status() {
 
   DynamicJsonDocument instanceData(128);
   instanceData["name"] = ConfigManager::getConfig().instanceName;
-  instanceData["default_speed"] = ConfigManager::getConfig().defaultSpeed;
   instanceData["target_temp"] = ConfigManager::getConfig().targetTemp;
   instanceData["target_sensor"] = ConfigManager::getConfig().targetSensor;
   jsonResponse["instance"] = instanceData;
