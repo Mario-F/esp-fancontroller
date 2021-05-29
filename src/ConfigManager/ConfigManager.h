@@ -2,15 +2,10 @@
 
 #include <LittleFS.h>
 #include <ArduinoJson.h>
-#include <ControllerTemp/ControllerTemp.h>
 
-// Main configuration for the esp controller
-struct MainConfig
-{
-  String instanceName;
-  int tempTarget;
-  SensorConfig sensors[MAX_SENSORS];
-};
+#define LOG_PREFIX "ConfigManager - "
+#define MAX_CONFIG_SIZE 1024
+#define MAX_SENSORS 8
 
 // Sensor config overlay for 
 struct SensorConfig
@@ -19,12 +14,25 @@ struct SensorConfig
   String sensorName;
 };
 
+// Main configuration for the esp controller
+struct MainConfig
+{
+  String instanceName;
+  int targetTemp;
+  String targetSensor;
+  SensorConfig sensors[MAX_SENSORS];
+};
+
 class ConfigManager {
 
   public:
-    static ConfigManager* getValue(String key);
+    static void setVerbose(boolean _flag);
+    static boolean initConfig(String _file);
+    static MainConfig getConfig();
 
   private:
     ConfigManager();
+    static boolean _verbose;
+    static String _configfile;
     static MainConfig _config;
 };

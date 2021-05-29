@@ -42,6 +42,12 @@ void handle_verbose() {
 void handle_Status() {
   DynamicJsonDocument jsonResponse(512);
 
+  DynamicJsonDocument instanceData(128);
+  instanceData["name"] = ConfigManager::getConfig().instanceName;
+  instanceData["target_temp"] = ConfigManager::getConfig().targetTemp;
+  instanceData["target_sensor"] = ConfigManager::getConfig().targetSensor;
+  jsonResponse["instance"] = instanceData;
+
   DynamicJsonDocument wifiData(128);
   wifiData["ip"] = WiFi.localIP().toString();
   wifiData["gateway"] = WiFi.gatewayIP().toString();
@@ -110,6 +116,9 @@ void setup() {
   temps.setVerbose(true);
   #endif
 
+  /* Init the config from file */
+  ConfigManager::initConfig("/config.json");
+
   /* Connect to wifi */
   Serial.print("Connecting to WIFI "); Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -140,22 +149,6 @@ void setup() {
   server.onNotFound(handle_NotFound);
   server.begin();
   Serial.println("HTTP server started");
-
-  /* Check LittleFS */
-  if(!LittleFS.begin()){
-    Serial.println("An Error has occurred while mounting LittleFS");
-    return;
-  }
-  File file = LittleFS.open("/test.txt", "r");
-  if(!file){
-    Serial.println("Failed to open file for reading");
-    return;
-  }
-  Serial.println("File Content:");
-  while(file.available()){
-    Serial.write(file.read());
-  }
-  file.close();
 }
 
 void loop() {
