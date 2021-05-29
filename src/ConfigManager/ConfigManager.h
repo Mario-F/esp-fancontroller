@@ -18,6 +18,7 @@ struct SensorConfig
 struct MainConfig
 {
   String instanceName;
+  int defaultSpeed;
   int targetTemp;
   String targetSensor;
   SensorConfig sensors[MAX_SENSORS];
@@ -29,6 +30,9 @@ class ConfigManager {
     static void setVerbose(boolean _flag);
     static boolean initConfig(String _file);
     static MainConfig getConfig();
+    static boolean saveConfig();
+
+    static void setDefaultSpeed(int speed);
 
   private:
     ConfigManager();

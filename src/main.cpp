@@ -44,6 +44,7 @@ void handle_Status() {
 
   DynamicJsonDocument instanceData(128);
   instanceData["name"] = ConfigManager::getConfig().instanceName;
+  instanceData["default_speed"] = ConfigManager::getConfig().defaultSpeed;
   instanceData["target_temp"] = ConfigManager::getConfig().targetTemp;
   instanceData["target_sensor"] = ConfigManager::getConfig().targetSensor;
   jsonResponse["instance"] = instanceData;
@@ -91,6 +92,7 @@ void handle_Speeds() {
   singleFan["type"] = "fan";
   singleFan["rpm"] = fana.getRPM();
   singleFan["speed"] = fana.getSpeed();
+  singleFan["defaultSpeed"] = ConfigManager::getConfig().defaultSpeed;
   jsonResponse.add(singleFan);
   String buf;
   serializeJson(jsonResponse, buf);
@@ -118,6 +120,7 @@ void setup() {
 
   /* Init the config from file */
   ConfigManager::initConfig("/config.json");
+  fana.setSpeed(ConfigManager::getConfig().defaultSpeed);
 
   /* Connect to wifi */
   Serial.print("Connecting to WIFI "); Serial.println(ssid);
@@ -143,6 +146,8 @@ void setup() {
     String newspeedS = server.pathArg(0);
     int newspeed = (int)newspeedS.toInt();
     fana.setSpeed(newspeed);
+    // Set this also as new default speed
+    ConfigManager::setDefaultSpeed(newspeed);
     Serial.println("FAN SPEED: '" + newspeedS + "'");
     server.send(200, "text/plain", "FAN SPEED UPDATED: '" + newspeedS + "'");
   });
