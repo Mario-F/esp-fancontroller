@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#define LOG_PREFIX "ControllerFan - "
+#define LOG_PREFIX_CF "ControllerFan - "
 
 class ControllerFan {
 

@@ -27,7 +27,7 @@ void ControllerFan::setVerbose(bool _flag) {
 void ControllerFan::setSpeed(int newSpeed) {
   fanSetSpeed = constrain(newSpeed, 0, 100);
   if(verbose) {
-    Serial.print(LOG_PREFIX"(setSpeed) Set new Speed ");
+    Serial.print(LOG_PREFIX_CF"(setSpeed) Set new Speed ");
     Serial.println(fanSetSpeed);
   }
   analogWrite(pinPWM, fanSetSpeed * 10.24);
@@ -48,7 +48,7 @@ void ControllerFan::loop() {
     fanActRPM = (fanRPMCounter * 30 / 2);
 
     if(verbose) {
-      Serial.print(LOG_PREFIX"(loop) FanSpeed - Time passed ");
+      Serial.print(LOG_PREFIX_CF"(loop) FanSpeed - Time passed ");
       Serial.print(timePassed);
       Serial.print("ms, with Fanspeed: ");
       Serial.print(fanActRPM);

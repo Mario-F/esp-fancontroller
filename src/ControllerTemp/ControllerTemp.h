@@ -2,7 +2,7 @@
 
 #include <DallasTemperature.h>
 
-#define LOG_PREFIX "ControllerTemp - "
+#define LOG_PREFIX_CT "ControllerTemp - "
 #define MAX_SENSORS 8
 #define DEVICE_DISCONNECTED_C -127
 

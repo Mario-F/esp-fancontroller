@@ -39,12 +39,12 @@ void ControllerTemp::initSensors(boolean waitForSensors) {
   dTemp.begin();
   deviceCount = dTemp.getDeviceCount();
   while(waitForSensors && deviceCount <= 0) {
-    Serial.println(LOG_PREFIX"(init) No temp sensors found try again after 1sec");
+    Serial.println(LOG_PREFIX_CT"(init) No temp sensors found try again after 1sec");
     delay(1000);
     deviceCount = dTemp.getDeviceCount();
   }
   if(verbose) {
-    Serial.print(LOG_PREFIX"(init) Found "); Serial.print(deviceCount); Serial.println(" Devices.");
+    Serial.print(LOG_PREFIX_CT"(init) Found "); Serial.print(deviceCount); Serial.println(" Devices.");
   }
   dTemp.setWaitForConversion(true);
   dTemp.requestTemperatures();
@@ -53,7 +53,7 @@ void ControllerTemp::initSensors(boolean waitForSensors) {
     dTemp.getAddress(deviceAddress, i);
     float temp = dTemp.getTempC(deviceAddress);
       if(verbose) {
-        Serial.print(LOG_PREFIX"(Loop-Conversion) Temp ");
+        Serial.print(LOG_PREFIX_CT"(Loop-Conversion) Temp ");
         Serial.print(temp);
         Serial.print(" from Device (directDeviceAddress) ");
         for(uint8_t i = 0; i < 8; i++) Serial.print(String(deviceAddress[i], HEX));
@@ -61,7 +61,7 @@ void ControllerTemp::initSensors(boolean waitForSensors) {
       }
     sensors[i] = ControllerSensor(deviceAddress);
     if(verbose) {
-      Serial.print(LOG_PREFIX"(init) Got sensor "); Serial.println(sensors[i].getUID());
+      Serial.print(LOG_PREFIX_CT"(init) Got sensor "); Serial.println(sensors[i].getUID());
     }
   }
   dTemp.setWaitForConversion(false);
@@ -79,7 +79,7 @@ void ControllerTemp::loop() {
   // Check if temp conversion request was already send and time is right
   if ( !requestSend &&  timePassed >= ( sampleRate - sampleRateAdvance ) ) {
     if(verbose) {
-      Serial.print(LOG_PREFIX"(Loop-Request) Time passed "); Serial.print(timePassed); Serial.println("ms");
+      Serial.print(LOG_PREFIX_CT"(Loop-Request) Time passed "); Serial.print(timePassed); Serial.println("ms");
     }
     requestSend = true;
     dTemp.requestTemperatures();
@@ -88,14 +88,14 @@ void ControllerTemp::loop() {
   // Check if sample rate reached and request temp and reset loop
   if (timePassed >= sampleRate ) {
     if(verbose) {
-      Serial.print(LOG_PREFIX"(Loop-Conversion) Time passed "); Serial.print(timePassed); Serial.println("ms");
+      Serial.print(LOG_PREFIX_CT"(Loop-Conversion) Time passed "); Serial.print(timePassed); Serial.println("ms");
     }
     for (int i = 0; i < deviceCount; i++) {
       DeviceAddress dadd;
       sensors[i].getAddress(dadd);
       float temp = dTemp.getTempC(dadd);
       if(verbose) {
-        Serial.print(LOG_PREFIX"(Loop-Conversion) Temp ");
+        Serial.print(LOG_PREFIX_CT"(Loop-Conversion) Temp ");
         Serial.print(temp);
         Serial.print(" from Device (directDeviceAddress) ");
         for(uint8_t i = 0; i < 8; i++) Serial.print(String(dadd[i], HEX));
@@ -107,7 +107,7 @@ void ControllerTemp::loop() {
         sensors[i].setError();
       }
       if(verbose) {
-        Serial.print(LOG_PREFIX"(Loop-Conversion) Convert Sensor ");
+        Serial.print(LOG_PREFIX_CT"(Loop-Conversion) Convert Sensor ");
         Serial.print(sensors[i].getUID() + ", Temp: ");
         Serial.print(sensors[i].getTemp());
         Serial.print(" celsius, Errors: ");

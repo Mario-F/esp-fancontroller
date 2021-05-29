@@ -3,7 +3,7 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 
-#define LOG_PREFIX "ConfigManager - "
+#define LOG_PREFIX_CM "ConfigManager - "
 #define MAX_CONFIG_SIZE 1024
 #define MAX_SENSORS 8
 
