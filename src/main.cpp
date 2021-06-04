@@ -44,8 +44,8 @@ void handle_Status() {
 
   DynamicJsonDocument instanceData(128);
   instanceData["name"] = ConfigManager::getConfig().instanceName;
-  instanceData["target_temp"] = ConfigManager::getConfig().targetTemp;
-  instanceData["target_sensor"] = ConfigManager::getConfig().targetSensor;
+  instanceData["targetTemp"] = ConfigManager::getConfig().targetTemp;
+  instanceData["targetSensor"] = ConfigManager::getConfig().targetSensor;
   jsonResponse["instance"] = instanceData;
 
   DynamicJsonDocument wifiData(128);
