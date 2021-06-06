@@ -76,16 +76,14 @@ boolean ConfigManager::saveConfig() {
   doc["targetSensor"] = _config.targetSensor;
 
   // Handle the sensors array to json
-  const size_t SENSORS_CAPACITY = JSON_ARRAY_SIZE(MAX_SENSORS);
-  StaticJsonDocument<SENSORS_CAPACITY> docSensors;
-  JsonArray docSensorsArray = docSensors.to<JsonArray>();
-  for(int i = 0; i < MAX_SENSORS; i++) {
-    StaticJsonDocument<256> docSensor;
-    docSensor["sensorUID"] = _config.sensors[i].sensorUID;
-    docSensor["sensorName"] = _config.sensors[i].sensorName;
-    docSensorsArray.add(docSensor);
+  DynamicJsonDocument sensorsArray(1024);
+  for (int i = 0; i < MAX_SENSORS; i++) {
+    DynamicJsonDocument jsonSensor(256);
+    jsonSensor["sensorUID"] = _config.sensors[i].sensorUID;
+    jsonSensor["sensorName"] = _config.sensors[i].sensorName;;
+    sensorsArray.add(jsonSensor);
   }
-  doc["sensors"] = docSensorsArray;
+  doc["sensors"] = sensorsArray;
 
   if (serializeJson(doc, file) == 0) {
     if (_verbose) {
@@ -106,4 +104,46 @@ void ConfigManager::setInstanceName(String name) {
 void ConfigManager::setDefaultSpeed(int speed) {
   _config.defaultSpeed = speed;
   saveConfig();
+};
+
+boolean ConfigManager::setSensorName(String sensorUID, String sensorName, String *error) {
+  // Check for update existing sensor name
+  boolean foundExistingSensor = false;
+  int lastEmptySlot = -1;
+  for(int i = 0; i < MAX_SENSORS; i++) {
+    if (_config.sensors[i].sensorUID == sensorUID) {
+      if (_verbose) {
+        Serial.print(LOG_PREFIX_CM"(setSensorName) Sensor UID "); Serial.print(sensorUID); Serial.println(" found in config, updating.");
+      }
+      foundExistingSensor = true;
+      _config.sensors[i].sensorName = sensorName;
+      break;
+    }
+    // Remember a empty slot for assign of new sensor mapping
+    if (_config.sensors[i].sensorUID == "" && _config.sensors[i].sensorName == "") {
+      lastEmptySlot = i;
+    }
+  }
+  
+  // Insert new sensor mapping to config
+  if (!foundExistingSensor) {
+    if (lastEmptySlot == -1) {
+      *error = "No empty slot for Sensor/Name mapping found please delete one first";
+      return false;
+    }
+    _config.sensors[lastEmptySlot].sensorUID = sensorUID;
+    _config.sensors[lastEmptySlot].sensorName = sensorName;
+  }
+  return saveConfig();
+};
+
+SensorConfig ConfigManager::getSensorByUID(String sensorUID) {
+  SensorConfig retSensor;
+  for(int i = 0; i < MAX_SENSORS; i++) {
+    if (_config.sensors[i].sensorUID == sensorUID) {
+      retSensor = _config.sensors[i];
+      break;
+    }
+  }
+  return retSensor;
 };

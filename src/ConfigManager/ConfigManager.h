@@ -34,6 +34,8 @@ class ConfigManager {
 
     static void setInstanceName(String name);
     static void setDefaultSpeed(int speed);
+    static boolean setSensorName(String sensorUID, String sensorName, String *error);
+    static SensorConfig getSensorByUID(String sensorUID);
 
   private:
     ConfigManager();

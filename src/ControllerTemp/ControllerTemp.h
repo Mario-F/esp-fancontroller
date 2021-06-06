@@ -15,6 +15,7 @@ class ControllerSensor {
     ControllerSensor();
     ControllerSensor(DeviceAddress _deviceAddress);
     String getUID(void);
+    String getName(void);
     void getAddress(DeviceAddress _deviceAddress);
     void setTemp(float temp);
     float getTemp(void);
@@ -46,6 +47,7 @@ class ControllerTemp {
     void loop(void);
     int getDeviceCount(void);
     ControllerSensor getSensor(int _sensorIndex);
+    boolean getSensorByUID(String sensorUID, ControllerSensor *foundSensor);
 
   private:
     OneWire myWire;

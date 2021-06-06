@@ -2,6 +2,7 @@
 
 #include "ControllerTemp.h"
 #include <OneWire.h>
+#include "ConfigManager/ConfigManager.h"
 
 /*
  * Manage Dalls Temp activities
@@ -128,6 +129,18 @@ ControllerSensor ControllerTemp::getSensor(int _sensorIndex) {
   return sensors[_sensorIndex];
 }
 
+boolean ControllerTemp::getSensorByUID(String sensorUID, ControllerSensor *foundSensor) {
+  int sensorCount = this->getDeviceCount();
+  for (int i = 0; i < sensorCount; i++) {
+    ControllerSensor sensor = this->getSensor(i);
+    if (sensor.getUID() == sensorUID) {
+      *foundSensor = sensor;
+      return true;
+    }
+  }
+  return false;
+}
+
 
 /*
  * Hold state of a single sensor
@@ -144,6 +157,10 @@ ControllerSensor::ControllerSensor(DeviceAddress _deviceAddress) {
 
 String ControllerSensor::getUID() {
   return deviceAddressString;
+}
+
+String ControllerSensor::getName() {
+  return ConfigManager::getSensorByUID(this->getUID()).sensorName;
 }
 
 void ControllerSensor::getAddress(DeviceAddress _deviceAddress) {

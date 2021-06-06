@@ -36,6 +36,7 @@ void handle_verbose() {
   if(verboseInput == "yes") newVerbose = true;
   fana.setVerbose(newVerbose);
   temps.setVerbose(newVerbose);
+  ConfigManager::setVerbose(newVerbose);
   server.send(200, "text/plain", "New verbose status is: '" + String(newVerbose) + "'");
 }
 
@@ -68,6 +69,39 @@ void handle_Status() {
   server.send(200, "application/json", buf);
 }
 
+void handle_Sensors() {
+  DynamicJsonDocument jsonResponse(1024);
+  for (int i = 0; i < MAX_SENSORS; i++) {
+    SensorConfig sens = ConfigManager::getConfig().sensors[i];
+    DynamicJsonDocument jsonSensor(256);
+    jsonSensor["slot"] = i;
+    jsonSensor["sensorUID"] = sens.sensorUID;
+    jsonSensor["sensorName"] = sens.sensorName;
+    jsonResponse.add(jsonSensor);
+  }
+  String buf;
+  serializeJson(jsonResponse, buf);
+  server.send(200, "application/json", buf);
+}
+
+void handle_SensorsUpdate() {
+  String sensorUID = server.pathArg(0);
+  String sensorName = server.pathArg(1);
+  String errorMessage = "";
+  // Check if sensor exists
+  ControllerSensor retSensor;
+  if (!temps.getSensorByUID(sensorUID, &retSensor)) {
+    server.send(404, "text/plain", "Sensor for update not found");
+    return;
+  }
+  if (!ConfigManager::setSensorName(sensorUID, sensorName, &errorMessage)) {
+    Serial.print("Error: "); Serial.println(errorMessage);
+    server.send(507, "text/plain", errorMessage);
+    return;
+  }
+  server.send(200, "text/plain");
+}
+
 void handle_Temps() {
   DynamicJsonDocument jsonResponse(1024);
   int sensorCount = temps.getDeviceCount();
@@ -76,6 +110,9 @@ void handle_Temps() {
     DynamicJsonDocument jsonSensor(256);
     jsonSensor["type"] = "ds18b20";
     jsonSensor["uid"] = sensor.getUID();
+    if (sensor.getName() != "") {
+      jsonSensor["name"] = sensor.getName();
+    }
     jsonSensor["temp"] = sensor.getTemp();
     jsonSensor["errors"] = sensor.getErrorCount();
     jsonResponse.add(jsonSensor);
@@ -115,6 +152,7 @@ void setup() {
   #ifdef DEBUGMODE
   fana.setVerbose(true);
   temps.setVerbose(true);
+  ConfigManager::setVerbose(true);
   #endif
 
   /* Init the config from file */
@@ -156,6 +194,8 @@ void setup() {
     Serial.print("New instance Name: "); Serial.println(newName);
     server.send(200, "text/plain");
   });
+  server.on("/sensors", handle_Sensors);
+  server.on(UriBraces("/sensors/{}/{}"), handle_SensorsUpdate);
   server.onNotFound(handle_NotFound);
   server.begin();
   Serial.println("HTTP server started");
