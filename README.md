@@ -1,8 +1,10 @@
 # Fan Controller
 
+This is a simple project in development to provide a multi temperature sensor IoT device including a Fan Controller, the focus resides in providing a JSON HTTP interface for scrape and configure remotely.
+
 ## Idea and initial sources
 
-Fancontrol: https://www.youtube.com/watch?v=UJK2JF8wOu8
+Fancontrol: <https://www.youtube.com/watch?v=UJK2JF8wOu8>
 
 ## Quickstart
 
