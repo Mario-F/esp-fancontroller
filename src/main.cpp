@@ -194,6 +194,17 @@ void setup() {
     Serial.print("New instance Name: "); Serial.println(newName);
     server.send(200, "text/plain");
   });
+  server.on(UriBraces("/target/{}"), []() {
+    String targetSensor = server.pathArg(0);
+    // Check if sensor exists
+    ControllerSensor retSensor;
+    if (!temps.getSensorByUID(targetSensor, &retSensor)) {
+      server.send(404, "text/plain", "Sensor for update not found");
+      return;
+    }
+    ConfigManager::setTargetSensor(targetSensor);
+    server.send(200, "text/plain");
+  });
   server.on("/sensors", handle_Sensors);
   server.on(UriBraces("/sensors/{}/{}"), handle_SensorsUpdate);
   server.onNotFound(handle_NotFound);

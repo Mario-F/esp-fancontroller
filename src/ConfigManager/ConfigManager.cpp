@@ -101,6 +101,11 @@ void ConfigManager::setInstanceName(String name) {
   saveConfig();
 };
 
+void ConfigManager::setTargetSensor(String targetSensor) {
+  _config.targetSensor = targetSensor;
+  saveConfig();
+};
+
 void ConfigManager::setDefaultSpeed(int speed) {
   _config.defaultSpeed = speed;
   saveConfig();
