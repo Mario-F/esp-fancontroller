@@ -166,7 +166,7 @@ void loopFanTemp() {
 
     // Set default to step down and validate different values to step up
     boolean stepUpNeeded = false;
-    if (retSensor.getErrorCount() > 0) {
+    if (retSensor.getErrorCount() > 10) {
       stepUpNeeded = true;
     }
     if (retSensor.getTemp() > mConfig.targetTemp) {
