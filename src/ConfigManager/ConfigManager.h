@@ -19,6 +19,7 @@ struct MainConfig
 {
   String instanceName;
   int defaultSpeed;
+  int minimumSpeed;
   int targetTemp;
   String targetSensor;
   SensorConfig sensors[MAX_SENSORS];
@@ -36,6 +37,7 @@ class ConfigManager {
     static void setTargetTemp(int targetTemp);
     static void setTargetSensor(String targetSensor);
     static void setDefaultSpeed(int speed);
+    static void setMinimumSpeed(int speed);
     static boolean setSensorName(String sensorUID, String sensorName, String *error);
     static SensorConfig getSensorByUID(String sensorUID);
 

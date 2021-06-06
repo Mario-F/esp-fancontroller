@@ -20,6 +20,7 @@
 ESP8266WebServer server(80);
 ControllerTemp temps(ONE_WIRE_BUS);
 ControllerFan fana(FAN_RPM_INPUT, FAN_PWM_OUTPUT);
+boolean loopFanTempVerbose = false;
 
 /* Define and Setup W-Lan */
 const char* ssid = WIFI_SSID;  // Enter SSID here
@@ -37,6 +38,7 @@ void handle_verbose() {
   fana.setVerbose(newVerbose);
   temps.setVerbose(newVerbose);
   ConfigManager::setVerbose(newVerbose);
+  loopFanTempVerbose = true;
   server.send(200, "text/plain", "New verbose status is: '" + String(newVerbose) + "'");
 }
 
@@ -129,6 +131,7 @@ void handle_Speeds() {
   singleFan["rpm"] = fana.getRPM();
   singleFan["speed"] = fana.getSpeed();
   singleFan["defaultSpeed"] = ConfigManager::getConfig().defaultSpeed;
+  singleFan["minimumSpeed"] = ConfigManager::getConfig().minimumSpeed;
   jsonResponse.add(singleFan);
   String buf;
   serializeJson(jsonResponse, buf);
@@ -137,6 +140,52 @@ void handle_Speeds() {
 
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
+}
+
+
+/*
+Handle the fan/temp regulation
+*/
+int loopFanTempLastExecute = millis();
+int loopFanTempLoopTimer = 10000;
+int loopFanTempUpSteps = 3;
+int loopFanTempDownSteps = 1;
+void loopFanTemp() {
+  // Check for execution time reached
+  int timePassed = (millis() - loopFanTempLastExecute);
+  if (timePassed > loopFanTempLoopTimer) {
+    MainConfig mConfig = ConfigManager::getConfig();
+    ControllerSensor retSensor;
+    if (!temps.getSensorByUID(mConfig.targetSensor, &retSensor)) {
+      if (loopFanTempVerbose) {
+        Serial.println("(LoopFanTemp) No target sensor is set, aborting.");
+      }
+      loopFanTempLastExecute = millis();
+      return;
+    }
+
+    // Set default to step down and validate different values to step up
+    boolean stepUpNeeded = false;
+    if (retSensor.getErrorCount() > 0) {
+      stepUpNeeded = true;
+    }
+    if (retSensor.getTemp() > mConfig.targetTemp) {
+      stepUpNeeded = true;
+    }
+
+    // Set new fanspeed
+    int actFanSpeed = fana.getSpeed();
+    if (stepUpNeeded) {
+      if (loopFanTempVerbose) {
+        Serial.println("(LoopFanTemp) Execute StepUP for fana.");
+      }
+      fana.setSpeed(actFanSpeed + loopFanTempUpSteps);
+    } else {
+      Serial.println("(LoopFanTemp) Execute StepDOWN for fana.");
+      fana.setSpeed(actFanSpeed - loopFanTempDownSteps);
+    }
+    loopFanTempLastExecute = millis();
+  }
 }
 
 
@@ -153,6 +202,7 @@ void setup() {
   fana.setVerbose(true);
   temps.setVerbose(true);
   ConfigManager::setVerbose(true);
+  loopFanTempVerbose = true;
   #endif
 
   /* Init the config from file */
@@ -179,14 +229,18 @@ void setup() {
   server.on("/status", handle_Status);
   server.on("/temps", handle_Temps);
   server.on("/fans", handle_Speeds);
-  server.on(UriBraces("/fan/{}"), []() {
+  server.on(UriBraces("/speed/default/{}"), []() {
     String newspeedS = server.pathArg(0);
     int newspeed = (int)newspeedS.toInt();
-    fana.setSpeed(newspeed);
+    ConfigManager::setDefaultSpeed(newspeed);
+    server.send(200, "text/plain", "DEFAULT FAN SPEED UPDATED: '" + newspeedS + "'");
+  });
+  server.on(UriBraces("/speed/minimum/{}"), []() {
+    String newspeedS = server.pathArg(0);
+    int newspeed = (int)newspeedS.toInt();
     // Set this also as new default speed
     ConfigManager::setDefaultSpeed(newspeed);
-    Serial.println("FAN SPEED: '" + newspeedS + "'");
-    server.send(200, "text/plain", "FAN SPEED UPDATED: '" + newspeedS + "'");
+    server.send(200, "text/plain", "MINIMUM FAN SPEED UPDATED: '" + newspeedS + "'");
   });
   server.on(UriBraces("/name/{}"), []() {
     String newName = server.pathArg(0);
@@ -222,4 +276,5 @@ void loop() {
   server.handleClient();
   fana.loop();
   temps.loop();
+  loopFanTemp();
 }

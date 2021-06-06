@@ -39,6 +39,7 @@ boolean ConfigManager::initConfig(String _file) {
 
   _config.instanceName = doc["instanceName"] | "unnamed";
   _config.defaultSpeed = doc["defaultSpeed"] | 100;
+  _config.minimumSpeed = doc["minimumSpeed"] | 20;
   _config.targetTemp = doc["targetTemp"] | 20;
   _config.targetSensor = doc["targetSensor"] | "";
   if(doc["sensors"]) {
@@ -72,6 +73,7 @@ boolean ConfigManager::saveConfig() {
 
   doc["instanceName"] = _config.instanceName;
   doc["defaultSpeed"] = _config.defaultSpeed;
+  doc["minimumSpeed"] = _config.minimumSpeed;
   doc["targetTemp"] = _config.targetTemp;
   doc["targetSensor"] = _config.targetSensor;
 
@@ -113,6 +115,11 @@ void ConfigManager::setTargetSensor(String targetSensor) {
 
 void ConfigManager::setDefaultSpeed(int speed) {
   _config.defaultSpeed = speed;
+  saveConfig();
+};
+
+void ConfigManager::setMinimumSpeed(int speed) {
+  _config.minimumSpeed = speed;
   saveConfig();
 };
 

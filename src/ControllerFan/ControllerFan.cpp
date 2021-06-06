@@ -1,6 +1,7 @@
 // Abstract PWM RPM Counter functions for Fancontrol
 
 #include "ControllerFan.h"
+#include "ConfigManager/ConfigManager.h"
 
 ControllerFan* ControllerFan::cfInstance = 0;
 
@@ -25,7 +26,8 @@ void ControllerFan::setVerbose(bool _flag) {
 }
 
 void ControllerFan::setSpeed(int newSpeed) {
-  fanSetSpeed = constrain(newSpeed, 0, 100);
+  int minSpeed = ConfigManager::getConfig().minimumSpeed;
+  fanSetSpeed = constrain(newSpeed, minSpeed, 100);
   if(verbose) {
     Serial.print(LOG_PREFIX_CF"(setSpeed) Set new Speed ");
     Serial.println(fanSetSpeed);
