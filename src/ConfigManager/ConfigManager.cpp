@@ -101,6 +101,11 @@ void ConfigManager::setInstanceName(String name) {
   saveConfig();
 };
 
+void ConfigManager::setTargetTemp(int targetTemp) {
+  _config.targetTemp = targetTemp;
+  saveConfig();
+};
+
 void ConfigManager::setTargetSensor(String targetSensor) {
   _config.targetSensor = targetSensor;
   saveConfig();

@@ -33,6 +33,7 @@ class ConfigManager {
     static boolean saveConfig();
 
     static void setInstanceName(String name);
+    static void setTargetTemp(int targetTemp);
     static void setTargetSensor(String targetSensor);
     static void setDefaultSpeed(int speed);
     static boolean setSensorName(String sensorUID, String sensorName, String *error);

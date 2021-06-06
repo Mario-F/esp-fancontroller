@@ -194,7 +194,13 @@ void setup() {
     Serial.print("New instance Name: "); Serial.println(newName);
     server.send(200, "text/plain");
   });
-  server.on(UriBraces("/target/{}"), []() {
+  server.on(UriBraces("/target/temp/{}"), []() {
+    String targetTemp = server.pathArg(0);
+    int targetTempInt = targetTemp.toInt();
+    ConfigManager::setTargetTemp(targetTempInt);
+    server.send(200, "text/plain");
+  });
+  server.on(UriBraces("/target/sensor/{}"), []() {
     String targetSensor = server.pathArg(0);
     // Check if sensor exists
     ControllerSensor retSensor;
