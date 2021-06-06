@@ -41,6 +41,12 @@ boolean ConfigManager::initConfig(String _file) {
   _config.defaultSpeed = doc["defaultSpeed"] | 100;
   _config.targetTemp = doc["targetTemp"] | 20;
   _config.targetSensor = doc["targetSensor"] | "";
+  if(doc["sensors"]) {
+    for(int i = 0; i < MAX_SENSORS; i++) {
+      _config.sensors[i].sensorUID = doc["sensors"][i]["sensorUID"] | "";
+      _config.sensors[i].sensorName = doc["sensors"][i]["sensorName"] | "";
+    }
+  }
 
   file.close();
   Serial.print(LOG_PREFIX_CM"(init) Config init finished for instance: ");
@@ -68,6 +74,18 @@ boolean ConfigManager::saveConfig() {
   doc["defaultSpeed"] = _config.defaultSpeed;
   doc["targetTemp"] = _config.targetTemp;
   doc["targetSensor"] = _config.targetSensor;
+
+  // Handle the sensors array to json
+  const size_t SENSORS_CAPACITY = JSON_ARRAY_SIZE(MAX_SENSORS);
+  StaticJsonDocument<SENSORS_CAPACITY> docSensors;
+  JsonArray docSensorsArray = docSensors.to<JsonArray>();
+  for(int i = 0; i < MAX_SENSORS; i++) {
+    StaticJsonDocument<256> docSensor;
+    docSensor["sensorUID"] = _config.sensors[i].sensorUID;
+    docSensor["sensorName"] = _config.sensors[i].sensorName;
+    docSensorsArray.add(docSensor);
+  }
+  doc["sensors"] = docSensorsArray;
 
   if (serializeJson(doc, file) == 0) {
     if (_verbose) {
