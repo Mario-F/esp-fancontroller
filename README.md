@@ -31,3 +31,17 @@ Upload and Flash remote:
 ```shell
 pio remote run -t upload --force-remote
 ```
+
+## Test
+
+To use the http calls provided by the `test/` folder you can use vscode extension `REST Client` and this config under `.vscode/settings.json`:
+
+```json
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+        "fanControllerHost": "1.2.3.4"
+    }
+  }
+}
+```

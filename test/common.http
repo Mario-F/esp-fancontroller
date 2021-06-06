@@ -1,0 +1,15 @@
+
+# @name status
+GET http://{{fanControllerHost}}/status
+
+###
+
+# @name temps
+GET http://{{fanControllerHost}}/temps
+
+###
+
+# @name fans
+GET http://{{fanControllerHost}}/fans
+
+###
