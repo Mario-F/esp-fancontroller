@@ -149,7 +149,7 @@ Handle the fan/temp regulation
 int loopFanTempLastExecute = millis();
 int loopFanTempLoopTimer = 20000;
 int loopFanTempAllowErrors = 20;
-int loopFanTempUpSteps = 2;
+int loopFanTempUpStepsMax = 5;
 int loopFanTempDownSteps = 1;
 void loopFanTemp() {
   // Check for execution time reached
@@ -177,10 +177,11 @@ void loopFanTemp() {
     // Set new fanspeed
     int actFanSpeed = fana.getSpeed();
     if (stepUpNeeded) {
+      int stepUpCalculated = constrain(retSensor.getTemp() - mConfig.targetTemp, 1, loopFanTempUpStepsMax);
+      fana.setSpeed(actFanSpeed + stepUpCalculated);
       if (loopFanTempVerbose) {
-        Serial.println("(LoopFanTemp) Execute StepUP for fana.");
+        Serial.print("(LoopFanTemp) Execute StepUP for fana: "); Serial.println(stepUpCalculated);
       }
-      fana.setSpeed(actFanSpeed + loopFanTempUpSteps);
     } else {
       Serial.println("(LoopFanTemp) Execute StepDOWN for fana.");
       fana.setSpeed(actFanSpeed - loopFanTempDownSteps);
