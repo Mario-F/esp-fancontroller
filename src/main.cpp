@@ -147,8 +147,9 @@ void handle_NotFound(){
 Handle the fan/temp regulation
 */
 int loopFanTempLastExecute = millis();
-int loopFanTempLoopTimer = 10000;
-int loopFanTempUpSteps = 3;
+int loopFanTempLoopTimer = 20000;
+int loopFanTempAllowErrors = 20;
+int loopFanTempUpSteps = 2;
 int loopFanTempDownSteps = 1;
 void loopFanTemp() {
   // Check for execution time reached
@@ -166,7 +167,7 @@ void loopFanTemp() {
 
     // Set default to step down and validate different values to step up
     boolean stepUpNeeded = false;
-    if (retSensor.getErrorCount() > 10) {
+    if (retSensor.getErrorCount() > loopFanTempAllowErrors) {
       stepUpNeeded = true;
     }
     if (retSensor.getTemp() > mConfig.targetTemp) {
