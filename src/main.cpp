@@ -52,6 +52,7 @@ void handle_Status() {
   jsonResponse["instance"] = instanceData;
 
   DynamicJsonDocument wifiData(128);
+  wifiData["ssid"] = WiFi.SSID();
   wifiData["ip"] = WiFi.localIP().toString();
   wifiData["gateway"] = WiFi.gatewayIP().toString();
   wifiData["netmask"] = WiFi.subnetMask().toString();
@@ -138,6 +139,22 @@ void handle_Speeds() {
   server.send(200, "application/json", buf);
 }
 
+void handle_Metrics() {
+  String instanceNameLabel = "instance=\""+ConfigManager::getConfig().instanceName+"\"";
+  String response;
+  response += "# HELP fancontroller_info A metric with constant 1 to create labels with information about this instance\n";
+  response += "# TYPE fancontroller_info gauge\n";
+  response += "fancontroller_info{"+instanceNameLabel+"} 1\n";
+  response += "# HELP fancontroller_wlan_info A metric with constant 1 to create labels with wlan information\n";
+  response += "# TYPE fancontroller_wlan_info gauge\n";
+  response += "fancontroller_wlan_info{"+instanceNameLabel+",ssid=\""+WiFi.SSID()+"\"} 1\n";
+  response += "# HELP fancontroller_wlan_signal The wlan signal strength for the connected network\n";
+  response += "# TYPE fancontroller_wlan_signal gauge\n";
+  response += "fancontroller_wlan_signal{"+instanceNameLabel+"} "+String(WiFi.RSSI())+"\n";
+
+  server.send(200, "application/json", response);
+}
+
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
@@ -177,7 +194,7 @@ void loopFanTemp() {
     // Set new fanspeed
     int actFanSpeed = fana.getSpeed();
     if (stepUpNeeded) {
-      int stepUpCalculated = constrain(retSensor.getTemp() - mConfig.targetTemp, 1, loopFanTempUpStepsMax);
+      int stepUpCalculated = constrain((retSensor.getTemp() - mConfig.targetTemp) * 2, 1, loopFanTempUpStepsMax);
       fana.setSpeed(actFanSpeed + stepUpCalculated);
       if (loopFanTempVerbose) {
         Serial.print("(LoopFanTemp) Execute StepUP for fana: "); Serial.println(stepUpCalculated);
@@ -269,6 +286,7 @@ void setup() {
   });
   server.on("/sensors", handle_Sensors);
   server.on(UriBraces("/sensors/{}/{}"), handle_SensorsUpdate);
+  server.on("/metrics", handle_Metrics);
   server.onNotFound(handle_NotFound);
   server.begin();
   Serial.println("HTTP server started");
