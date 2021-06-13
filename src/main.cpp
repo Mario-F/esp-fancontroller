@@ -152,6 +152,27 @@ void handle_Metrics() {
   response += "# TYPE fancontroller_wlan_signal gauge\n";
   response += "fancontroller_wlan_signal{"+instanceNameLabel+"} "+String(WiFi.RSSI())+"\n";
 
+  response += "# HELP fancontroller_fan_rpm The fans actaul RPM value reed by yellow signal\n";
+  response += "# TYPE fancontroller_fan_rpm gauge\n";
+  response += "fancontroller_fan_rpm{"+instanceNameLabel+"} "+String(fana.getRPM())+"\n";
+  response += "# HELP fancontroller_fan_speed The desired speed in percent\n";
+  response += "# TYPE fancontroller_fan_speed gauge\n";
+  response += "fancontroller_fan_speed{"+instanceNameLabel+"} "+String(fana.getSpeed())+"\n";
+
+  int sensorCount = temps.getDeviceCount();
+  response += "# HELP fancontroller_sensor_temp The actual temp of an sensor\n";
+  response += "# TYPE fancontroller_sensor_temp gauge\n";
+  for (int i = 0; i < sensorCount; i++) {
+    ControllerSensor sensor = temps.getSensor(i);
+    response += "fancontroller_sensor_temp{uid=\""+sensor.getUID()+"\",name=\""+sensor.getName()+"\"} "+sensor.getTemp()+"\n";
+  }
+  response += "# HELP fancontroller_sensor_errors Errors in a row since last succesfull result\n";
+  response += "# TYPE fancontroller_sensor_errors counter\n";
+  for (int i = 0; i < sensorCount; i++) {
+    ControllerSensor sensor = temps.getSensor(i);
+    response += "fancontroller_sensor_errors{uid=\""+sensor.getUID()+"\",name=\""+sensor.getName()+"\"} "+sensor.getErrorCount()+"\n";
+  }
+
   server.send(200, "application/json", response);
 }
 
