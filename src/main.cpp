@@ -245,9 +245,11 @@ void setup() {
   loopFanTempVerbose = true;
   #endif
 
+  /* Set fan to max speed to prevent overheat if init hangs */
+  fana.setSpeed(100);
+
   /* Init the config from file */
   ConfigManager::initConfig("/config.json");
-  fana.setSpeed(ConfigManager::getConfig().defaultSpeed);
 
   /* Connect to wifi */
   Serial.print("Connecting to WIFI "); Serial.println(ssid);
@@ -263,6 +265,9 @@ void setup() {
   temps.setSampleRate(5765);
   temps.setSampleRateAdvance(1372);
   temps.initSensors(true);
+
+  /* Set fan to default speed */
+  fana.setSpeed(ConfigManager::getConfig().defaultSpeed);
 
   /* Setup Webserver handling */
   server.on(UriBraces("/verbose/{}"), handle_verbose);
