@@ -40,6 +40,7 @@ void ControllerTemp::initSensors(boolean waitForSensors) {
   dTemp.begin();
   deviceCount = dTemp.getDeviceCount();
   while(waitForSensors && deviceCount <= 0) {
+    // TODO: Can cause infinite loops, implement some sort auf error status for this case
     Serial.println(LOG_PREFIX_CT"(init) No temp sensors found try again after 1sec");
     delay(1000);
     deviceCount = dTemp.getDeviceCount();
