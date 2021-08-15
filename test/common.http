@@ -13,3 +13,50 @@ GET http://{{fanControllerHost}}/temps
 GET http://{{fanControllerHost}}/fans
 
 ###
+
+# @name configControllerName
+# Name the ESP-Controller
+@newName = TestESP
+GET http://{{fanControllerHost}}/name/{{newName}}
+
+###
+
+# @name configSensorName
+# Name the ESP-Controller
+@sensorID = 28b0a2e1391913f
+@newSensorName = TestESP
+GET http://{{fanControllerHost}}/sensors/{{sensorID}}/{{newSensorName}}
+
+###
+
+# @name configMinimumSpeed
+# Minimum speed of the FAN in percent
+@minSpeed = 20
+GET http://{{fanControllerHost}}/speed/minimum/{{minSpeed}}
+
+###
+
+# @name configTargetSensor
+# Sensor to use for controlling the FAN
+@targetSensor = 28b0a2e1391913f
+GET http://{{fanControllerHost}}/target/sensor/{{targetSensor}}
+
+###
+
+# @name configTargetTemp
+# The target temp to aim the fan for
+@targetTemp = 26
+GET http://{{fanControllerHost}}/target/temp/{{targetTemp}}
+
+###
+
+# @name metrics
+# Promtheus output format
+GET http://{{fanControllerHost}}/metrics
+
+###
+
+# @name verbose
+# Input other than yes will default to verbose mode = no
+@verboseMode = yes
+GET http://{{fanControllerHost}}/verbose/{{verboseMode}}
