@@ -2,9 +2,24 @@
 
 This is a simple project in development to provide a multi temperature sensor IoT device including a Fan Controller, the focus resides in providing a JSON HTTP interface for scrape and configure remotely.
 
-## Idea and initial sources
+## State of the Project
 
-Fancontrol: <https://www.youtube.com/watch?v=UJK2JF8wOu8>
+The projects actual state is a working temperature fancontroller including metrics export in prometheus format.
+
+Features:
+
+* Control a fans speed by temp sensor of your choice
+* Up to 8 temperature sensors
+* Naming sensors
+* Configuration is done over http
+* Configuration is saved to flash memory and read on start
+* Prometheus metrics export endpoint
+
+Requriements:
+
+* A compatible ESP8266 (i am using the  ESP-12E variant)
+* DS18B20 Temparatur Sensors
+* PWM Controlles FAN (4wire)
 
 ## Quickstart
 
