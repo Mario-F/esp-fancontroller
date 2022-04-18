@@ -32,7 +32,7 @@ void ControllerFan::setSpeed(int newSpeed) {
     Serial.print(LOG_PREFIX_CF"(setSpeed) Set new Speed ");
     Serial.println(fanSetSpeed);
   }
-  analogWrite(pinPWM, fanSetSpeed * 255);
+  analogWrite(pinPWM, fanSetSpeed * 2.55);
 };
 
 int ControllerFan::getSpeed() {
