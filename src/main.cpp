@@ -185,7 +185,7 @@ void handle_NotFound(){
 Handle the fan/temp regulation
 */
 int loopFanTempLastExecute = millis();
-int loopFanTempLoopTimer = 20000;
+int loopFanTempLoopTimer = 10000;
 int loopFanTempAllowErrors = 20;
 int loopFanTempUpStepsMax = 5;
 int loopFanTempDownSteps = 1;
