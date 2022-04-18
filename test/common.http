@@ -22,7 +22,7 @@ GET http://{{fanControllerHost}}/name/{{newName}}
 ###
 
 # @name configSensorName
-# Name the ESP-Controller
+# Name a Sensor
 @sensorID = 28b0a2e1391913f
 @newSensorName = TestESP
 GET http://{{fanControllerHost}}/sensors/{{sensorID}}/{{newSensorName}}
