@@ -210,7 +210,7 @@ Handle the fan/temp regulation
 int loopFanTempLastExecute = millis();
 int loopFanTempLoopTimer = 10000;
 int loopFanTempAllowErrors = 20;
-int loopFanTempUpStepsMax = 5;
+int loopFanTempUpStepsMax = 10;
 int loopFanTempDownSteps = 1;
 int loopFanTempUpStepsSkip = 0;
 int loopFanTempDownStepsSkip = 0;
