@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "Metrics.h"
 
+MetricGroup MetricsManager::_metricGroups[MAX_METRICS_GROUPS_COUNT];
+int MetricsManager::_metricGroupCount = 0;
 MetricLabel MetricsManager::_globalLabels[MAX_GLOBAL_LABELS_COUNT];
 int MetricsManager::_globalLabelCount = 0;
 Metric MetricsManager::_metrics[MAX_METRICS_COUNT];
@@ -20,10 +22,26 @@ Metric *MetricsManager::createMetric(String mName, String mType, String mHelp) {
   Metric *nm = &_metrics[_metricCount];
   _metricCount++;
   nm->name = mName;
-  nm->help = mHelp;
-  nm->type = mType;
   nm->labelCount = 0;
   nm->value = 0;
+
+  // search metric group for this metric and add if not found
+  bool groupFound = false;
+  for (int i = 0; i < _metricGroupCount; i++) {
+    if (_metricGroups[i].name == mName) {
+      _metricGroups[i].help = mHelp;
+      _metricGroups[i].type = mType;
+      groupFound = true;
+      break;
+    }
+  }
+  if (!groupFound) {
+    _metricGroups[_metricGroupCount].name = nm->name;
+    _metricGroups[_metricGroupCount].help = mHelp;
+    _metricGroups[_metricGroupCount].type = mType;
+    _metricGroupCount++;
+  }
+
   return nm;
 };
 
@@ -37,40 +55,49 @@ MetricLabel *MetricsManager::addMetricLabel(Metric *metric, String labelName, St
 
 void MetricsManager::resetMetrics() {
   _metricCount = 0;
+  _metricGroupCount = 0;
 };
 
 String MetricsManager::getMetrics() {
   String result = "";
 
-  // iterate over metrics
-  for (int i = 0; i < _metricCount; i++) {
-    Metric *m = &_metrics[i];
-    result += "# HELP " + m->name + " " + m->help + "\n";
-    result += "# TYPE " + m->name + " " + m->type + "\n";
-    result += m->name;
+  // iterate per metric group
+  for (int i = 0; i < _metricGroupCount; i++) {
+    MetricGroup *actualGroup = &_metricGroups[i];
+    result += "# HELP " + actualGroup->name + " " + actualGroup->help + "\n";
+    result += "# TYPE " + actualGroup->name + " " + actualGroup->type + "\n";
+    
+    // iterate over metrics
+    for (int i = 0; i < _metricCount; i++) {
+      Metric *m = &_metrics[i];
+      if (m->name != actualGroup->name) {
+        continue;
+      }
+      result += m->name;
 
-    // Add labels if existing
-    if (m->labelCount > 0 || _globalLabelCount > 0) {
-      result += "{";
-      bool first = true;
-      for (int j = 0; j < _globalLabelCount; j++) {
-        if (!first) {
-          result += ",";
+      // Add labels if existing
+      if (m->labelCount > 0 || _globalLabelCount > 0) {
+        result += "{";
+        bool first = true;
+        for (int j = 0; j < _globalLabelCount; j++) {
+          if (!first) {
+            result += ",";
+          }
+          result += _globalLabels[j].name + "=\"" + _globalLabels[j].value + "\"";
+          first = false;
         }
-        result += _globalLabels[j].name + "=\"" + _globalLabels[j].value + "\"";
-        first = false;
-      }
-      for (int j = 0; j < m->labelCount; j++) {
-        if (!first) {
-          result += ",";
+        for (int j = 0; j < m->labelCount; j++) {
+          if (!first) {
+            result += ",";
+          }
+          result += m->labels[j].name + "=\"" + m->labels[j].value + "\"";
+          first = false;
         }
-        result += m->labels[j].name + "=\"" + m->labels[j].value + "\"";
-        first = false;
+        result += "}";
       }
-      result += "}";
+
+      result += " " + (String)m->value + "\n";
     }
-
-    result += " " + (String)m->value + "\n";
   }
 
   return result;
