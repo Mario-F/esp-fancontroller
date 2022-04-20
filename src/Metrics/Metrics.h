@@ -3,8 +3,8 @@
 #include <Arduino.h>
 
 #define MAX_GLOBAL_LABELS_COUNT 8
-#define MAX_LOCAL_LABELS_COUNT 12
-#define MAX_METRICS_COUNT 40
+#define MAX_LOCAL_LABELS_COUNT 8
+#define MAX_METRICS_COUNT 64
 
 struct MetricLabel {
   String name;
