@@ -148,10 +148,18 @@ void handle_Metrics() {
   Metric *fInfo = MetricsManager::createMetric("fancontroller_info", "gauge", "A metric with constant 1 to create labels with information about this instance");
   fInfo->value = 1;
 
+  Metric *fEspInfo = MetricsManager::createMetric("fancontroller_esp_info", "gauge", "A metric with constant 1 with infos about the ESP");
+  fEspInfo->value = 1;
+  MetricsManager::addMetricLabel(fEspInfo, "chip_id", (String)ESP.getChipId());
+  MetricsManager::addMetricLabel(fEspInfo, "flash_chip_id", (String)ESP.getFlashChipId());
+  
+  Metric *fEspFreeHeap = MetricsManager::createMetric("fancontroller_esp_free_heap", "gauge", "Show the actual free heap of the ESP");
+  fEspFreeHeap->value = ESP.getFreeHeap();
+
   Metric *fWlan = MetricsManager::createMetric("fancontroller_wlan_info", "gauge", "A metric with constant 1 to create labels with wlan information");
+  fWlan->value = 1;
   MetricsManager::addMetricLabel(fWlan, "ssid", WiFi.SSID());
   MetricsManager::addMetricLabel(fWlan, "ip", WiFi.localIP().toString());
-  fWlan->value = 1;
 
   Metric *fWlanRssi = MetricsManager::createMetric("fancontroller_wlan_signal", "gauge", "The wlan signal strength for the connected network");
   fWlanRssi->value = (float)WiFi.RSSI();
