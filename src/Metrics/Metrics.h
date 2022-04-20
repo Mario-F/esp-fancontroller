@@ -2,9 +2,9 @@
 
 #include <Arduino.h>
 
-#define MAX_GLOBAL_LABELS_COUNT 4
-#define MAX_LOCAL_LABELS_COUNT 8
-#define MAX_METRICS_COUNT 32
+#define MAX_GLOBAL_LABELS_COUNT 8
+#define MAX_LOCAL_LABELS_COUNT 12
+#define MAX_METRICS_COUNT 40
 
 struct MetricLabel {
   String name;
