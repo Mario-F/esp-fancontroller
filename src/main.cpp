@@ -242,7 +242,7 @@ void loopFanTemp() {
     // Set new fanspeed
     int actFanSpeed = fana.getSpeed();
     if (stepUpNeeded) {
-      if (loopFanTempUpStepsSkip <= 5 && readTemp < loopFanTempLastTemp) {
+      if (loopFanTempUpStepsSkip <= 10 && readTemp < loopFanTempLastTemp) {
         loopFanTempUpStepsSkip++;
         if (loopFanTempVerbose) {
           Serial.println("(LoopFanTemp) Temp is decreasing, dont step up.");
@@ -256,7 +256,7 @@ void loopFanTemp() {
         }
       }
     } else {
-      if (loopFanTempDownStepsSkip <= 5 && readTemp > loopFanTempLastTemp) {
+      if (loopFanTempDownStepsSkip <= 10 && readTemp > loopFanTempLastTemp) {
         loopFanTempDownStepsSkip++;
         if (loopFanTempVerbose) {
           Serial.println("(LoopFanTemp) Temp is increasing, dont step down.");
