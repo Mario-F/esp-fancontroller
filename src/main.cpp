@@ -237,6 +237,7 @@ void loopFanTemp() {
 
     // Set new fanspeed
     int actFanSpeed = fana.getSpeed();
+    // TODO: Check for falling temps and suspend step up
     if (stepUpNeeded) {
       int stepUpCalculated = constrain((retSensor.getTemp() - mConfig.targetTemp) * 2, 1, loopFanTempUpStepsMax);
       fana.setSpeed(actFanSpeed + stepUpCalculated);
