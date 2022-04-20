@@ -141,6 +141,8 @@ void handle_Speeds() {
 }
 
 void handle_Metrics() {
+  MainConfig mConfig = ConfigManager::getConfig();
+
   MetricsManager::resetGlobalLabels();
   MetricsManager::addGlobalLabel("instance", ConfigManager::getConfig().instanceName);
   MetricsManager::resetMetrics();
@@ -178,6 +180,14 @@ void handle_Metrics() {
     MetricsManager::addMetricLabel(fTemp, "uid", sensor.getUID());
     MetricsManager::addMetricLabel(fTemp, "name", sensor.getName());
     fTemp->value = sensor.getTemp();
+
+    // if sensor is target create metric for target temp
+    if (mConfig.targetSensor == sensor.getUID()) {
+      Metric *fTargetTemp = MetricsManager::createMetric("fancontroller_sensor_target_temp", "gauge", "The target temp fan control is set to");
+      MetricsManager::addMetricLabel(fTargetTemp, "uid", sensor.getUID());
+      MetricsManager::addMetricLabel(fTargetTemp, "name", sensor.getName());
+      fTargetTemp->value = mConfig.targetTemp;
+    }
 
     Metric *fErrorsValue = MetricsManager::createMetric("fancontroller_sensor_errors", "counter", "Errors in a row since last succesfull result");
     MetricsManager::addMetricLabel(fErrorsValue, "uid", sensor.getUID());
