@@ -10,6 +10,7 @@
 #include "ConfigManager/ConfigManager.h"
 #include "ControllerTemp/ControllerTemp.h"
 #include "ControllerFan/ControllerFan.h"
+#include "Metrics/Metrics.h"
 
 /* Set pin usage */
 #define ONE_WIRE_BUS D2
@@ -140,39 +141,42 @@ void handle_Speeds() {
 }
 
 void handle_Metrics() {
-  String instanceNameLabel = "instance=\""+ConfigManager::getConfig().instanceName+"\"";
-  String response;
-  response += "# HELP fancontroller_info A metric with constant 1 to create labels with information about this instance\n";
-  response += "# TYPE fancontroller_info gauge\n";
-  response += "fancontroller_info{"+instanceNameLabel+"} 1\n";
-  response += "# HELP fancontroller_wlan_info A metric with constant 1 to create labels with wlan information\n";
-  response += "# TYPE fancontroller_wlan_info gauge\n";
-  response += "fancontroller_wlan_info{"+instanceNameLabel+",ssid=\""+WiFi.SSID()+"\"} 1\n";
-  response += "# HELP fancontroller_wlan_signal The wlan signal strength for the connected network\n";
-  response += "# TYPE fancontroller_wlan_signal gauge\n";
-  response += "fancontroller_wlan_signal{"+instanceNameLabel+"} "+String(WiFi.RSSI())+"\n";
+  MetricsManager::resetGlobalLabels();
+  MetricsManager::addGlobalLabel("instance", ConfigManager::getConfig().instanceName);
+  MetricsManager::resetMetrics();
 
-  response += "# HELP fancontroller_fan_rpm The fans actaul RPM value reed by yellow signal\n";
-  response += "# TYPE fancontroller_fan_rpm gauge\n";
-  response += "fancontroller_fan_rpm{"+instanceNameLabel+"} "+String(fana.getRPM())+"\n";
-  response += "# HELP fancontroller_fan_speed The desired speed in percent\n";
-  response += "# TYPE fancontroller_fan_speed gauge\n";
-  response += "fancontroller_fan_speed{"+instanceNameLabel+"} "+String(fana.getSpeed())+"\n";
+  Metric *fInfo = MetricsManager::createMetric("fancontroller_info", "gauge", "A metric with constant 1 to create labels with information about this instance");
+  fInfo->value = 1;
+
+  Metric *fWlan = MetricsManager::createMetric("fancontroller_wlan_info", "gauge", "A metric with constant 1 to create labels with wlan information");
+  MetricsManager::addMetricLabel(fWlan, "ssid", WiFi.SSID());
+  fWlan->value = 1;
+
+  Metric *fWlanRssi = MetricsManager::createMetric("fancontroller_wlan_signal", "gauge", "The wlan signal strength for the connected network");
+  fWlanRssi->value = (float)WiFi.RSSI();
+
+  Metric *fRPM = MetricsManager::createMetric("fancontroller_fan_rpm", "gauge", "The fans actual RPM value read by yellow signal");
+  fRPM->value = fana.getRPM();
+
+  Metric *fSpeed = MetricsManager::createMetric("fancontroller_fan_speed", "gauge", "The desired speed in percent");
+  fSpeed->value = fana.getSpeed();
 
   int sensorCount = temps.getDeviceCount();
-  response += "# HELP fancontroller_sensor_temp The actual temp of an sensor\n";
-  response += "# TYPE fancontroller_sensor_temp gauge\n";
   for (int i = 0; i < sensorCount; i++) {
     ControllerSensor sensor = temps.getSensor(i);
-    response += "fancontroller_sensor_temp{uid=\""+sensor.getUID()+"\",name=\""+sensor.getName()+"\"} "+sensor.getTemp()+"\n";
-  }
-  response += "# HELP fancontroller_sensor_errors Errors in a row since last succesfull result\n";
-  response += "# TYPE fancontroller_sensor_errors counter\n";
-  for (int i = 0; i < sensorCount; i++) {
-    ControllerSensor sensor = temps.getSensor(i);
-    response += "fancontroller_sensor_errors{uid=\""+sensor.getUID()+"\",name=\""+sensor.getName()+"\"} "+sensor.getErrorCount()+"\n";
+    
+    Metric *fTemp = MetricsManager::createMetric("fancontroller_sensor_temp", "gauge", "The actual temp of a sensor");
+    MetricsManager::addMetricLabel(fTemp, "uid", sensor.getUID());
+    MetricsManager::addMetricLabel(fTemp, "name", sensor.getName());
+    fTemp->value = sensor.getTemp();
+
+    Metric *fErrorsValue = MetricsManager::createMetric("fancontroller_sensor_errors", "counter", "Errors in a row since last succesfull result");
+    MetricsManager::addMetricLabel(fErrorsValue, "uid", sensor.getUID());
+    MetricsManager::addMetricLabel(fErrorsValue, "name", sensor.getName());
+    fErrorsValue->value = sensor.getErrorCount();
   }
 
+  String response = MetricsManager::getMetrics();
   server.send(200, "application/json", response);
 }
 
