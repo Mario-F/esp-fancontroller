@@ -150,6 +150,7 @@ void handle_Metrics() {
 
   Metric *fWlan = MetricsManager::createMetric("fancontroller_wlan_info", "gauge", "A metric with constant 1 to create labels with wlan information");
   MetricsManager::addMetricLabel(fWlan, "ssid", WiFi.SSID());
+  MetricsManager::addMetricLabel(fWlan, "ip", WiFi.localIP().toString());
   fWlan->value = 1;
 
   Metric *fWlanRssi = MetricsManager::createMetric("fancontroller_wlan_signal", "gauge", "The wlan signal strength for the connected network");
