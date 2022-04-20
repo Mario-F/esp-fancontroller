@@ -212,6 +212,8 @@ int loopFanTempLoopTimer = 10000;
 int loopFanTempAllowErrors = 20;
 int loopFanTempUpStepsMax = 5;
 int loopFanTempDownSteps = 1;
+int loopFanTempUpStepsSkip = 0;
+float loopFanTempLastTemp = 0;
 void loopFanTemp() {
   // Check for execution time reached
   int timePassed = (millis() - loopFanTempLastExecute);
@@ -231,23 +233,32 @@ void loopFanTemp() {
     if (retSensor.getErrorCount() > loopFanTempAllowErrors) {
       stepUpNeeded = true;
     }
-    if (retSensor.getTemp() > mConfig.targetTemp) {
+    float readTemp = retSensor.getTemp();
+    if (readTemp > mConfig.targetTemp) {
       stepUpNeeded = true;
     }
 
     // Set new fanspeed
     int actFanSpeed = fana.getSpeed();
-    // TODO: Check for falling temps and suspend step up
     if (stepUpNeeded) {
-      int stepUpCalculated = constrain((retSensor.getTemp() - mConfig.targetTemp) * 2, 1, loopFanTempUpStepsMax);
-      fana.setSpeed(actFanSpeed + stepUpCalculated);
-      if (loopFanTempVerbose) {
-        Serial.print("(LoopFanTemp) Execute StepUP for fana: "); Serial.println(stepUpCalculated);
+      if (loopFanTempUpStepsSkip <= 5 && readTemp < loopFanTempLastTemp) {
+        loopFanTempUpStepsSkip++;
+        if (loopFanTempVerbose) {
+          Serial.println("(LoopFanTemp) Temp is decreasing, dont step up.");
+        }
+      } else {
+        loopFanTempUpStepsSkip = 0;
+        int stepUpCalculated = constrain((retSensor.getTemp() - mConfig.targetTemp) * 2, 1, loopFanTempUpStepsMax);
+        fana.setSpeed(actFanSpeed + stepUpCalculated);
+        if (loopFanTempVerbose) {
+          Serial.print("(LoopFanTemp) Execute StepUP for fana: "); Serial.println(stepUpCalculated);
+        }
       }
     } else {
       Serial.println("(LoopFanTemp) Execute StepDOWN for fana.");
       fana.setSpeed(actFanSpeed - loopFanTempDownSteps);
     }
+    loopFanTempLastTemp = readTemp;
     loopFanTempLastExecute = millis();
   }
 }
