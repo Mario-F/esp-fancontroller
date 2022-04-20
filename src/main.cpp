@@ -213,6 +213,7 @@ int loopFanTempAllowErrors = 20;
 int loopFanTempUpStepsMax = 5;
 int loopFanTempDownSteps = 1;
 int loopFanTempUpStepsSkip = 0;
+int loopFanTempDownStepsSkip = 0;
 float loopFanTempLastTemp = 0;
 void loopFanTemp() {
   // Check for execution time reached
@@ -255,8 +256,16 @@ void loopFanTemp() {
         }
       }
     } else {
-      Serial.println("(LoopFanTemp) Execute StepDOWN for fana.");
-      fana.setSpeed(actFanSpeed - loopFanTempDownSteps);
+      if (loopFanTempDownStepsSkip <= 5 && readTemp > loopFanTempLastTemp) {
+        loopFanTempDownStepsSkip++;
+        if (loopFanTempVerbose) {
+          Serial.println("(LoopFanTemp) Temp is increasing, dont step down.");
+        }
+      } else {
+        loopFanTempDownStepsSkip = 0;
+        Serial.println("(LoopFanTemp) Execute StepDOWN for fana.");
+        fana.setSpeed(actFanSpeed - loopFanTempDownSteps);
+      }
     }
     loopFanTempLastTemp = readTemp;
     loopFanTempLastExecute = millis();
