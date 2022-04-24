@@ -289,9 +289,6 @@ void setup() {
   loopFanTempVerbose = true;
   #endif
 
-  /* Set fan to max speed to prevent overheat if init hangs */
-  fana.setSpeed(100);
-
   /* Init the config from file */
   ConfigManager::initConfig("/config.json");
 

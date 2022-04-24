@@ -13,11 +13,11 @@ ControllerFan::ControllerFan(uint8_t _pinRPM, uint8_t _pinPWM) {
   fanActRPM = 0;
   fanSetSpeed = 0;
   
+  pinMode(pinPWM, OUTPUT);
   analogWriteFreq(22000);
   setSpeed(100);
   
   cfInstance = this;
-  pinMode(pinPWM, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(pinRPM), ControllerFan::incrISR, RISING);
 };
 
