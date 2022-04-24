@@ -8,7 +8,7 @@ class ControllerFan {
 
   public:
     ControllerFan();
-    ControllerFan(uint8_t _pinRPM, uint8_t _pinPWM);
+    ControllerFan(uint8_t _pinRPM, uint8_t _pinPWM, bool _invertedPWM);
     void setVerbose(bool _flag);
     void setSpeed(int newSpeed);
     int getSpeed();
@@ -18,6 +18,7 @@ class ControllerFan {
   private:
     uint8_t pinRPM;
     uint8_t pinPWM;
+    bool invertedPWM;
     bool verbose;
     int fanRPMCounter;
     int fanActRPM;

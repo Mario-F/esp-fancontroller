@@ -16,11 +16,12 @@
 #define ONE_WIRE_BUS D2
 #define FAN_RPM_INPUT D3
 #define FAN_PWM_OUTPUT D8
+#define FAN_PWM_INVERT true
 
 /* Define Objects */
 ESP8266WebServer server(80);
 ControllerTemp temps(ONE_WIRE_BUS);
-ControllerFan fana(FAN_RPM_INPUT, FAN_PWM_OUTPUT);
+ControllerFan fana(FAN_RPM_INPUT, FAN_PWM_OUTPUT, FAN_PWM_INVERT);
 boolean loopFanTempVerbose = false;
 
 /* Define and Setup W-Lan */

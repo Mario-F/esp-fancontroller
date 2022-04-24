@@ -6,9 +6,11 @@
 ControllerFan* ControllerFan::cfInstance = 0;
 
 ControllerFan::ControllerFan() {};
-ControllerFan::ControllerFan(uint8_t _pinRPM, uint8_t _pinPWM) {
+ControllerFan::ControllerFan(uint8_t _pinRPM, uint8_t _pinPWM, bool _invertedPWM) {
   pinRPM = _pinRPM;
   pinPWM = _pinPWM;
+  invertedPWM = _invertedPWM;
+
   fanRPMCounter = 0;
   fanActRPM = 0;
   fanSetSpeed = 0;
@@ -32,7 +34,16 @@ void ControllerFan::setSpeed(int newSpeed) {
     Serial.print(LOG_PREFIX_CF"(setSpeed) Set new Speed ");
     Serial.println(fanSetSpeed);
   }
-  analogWrite(pinPWM, fanSetSpeed * 2.55);
+  if(invertedPWM) {
+    int invertedSetSpeed = abs(fanSetSpeed - 100);
+    if(verbose) {
+      Serial.print(LOG_PREFIX_CF"(setSpeed) PWM is inverted, final value is ");
+      Serial.println(invertedSetSpeed);
+    }
+    analogWrite(pinPWM, invertedSetSpeed * 2.55);
+  } else {
+    analogWrite(pinPWM, fanSetSpeed * 2.55);
+  }
 };
 
 int ControllerFan::getSpeed() {
