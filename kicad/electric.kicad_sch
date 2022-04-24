@@ -1717,7 +1717,7 @@
       (reference "R2") (unit 1) (value "3.3k") (footprint "")
     )
     (path "/dec3a3fc-aac1-4ba5-87a4-0f7cc72565ee"
-      (reference "R3") (unit 1) (value "5k") (footprint "")
+      (reference "R3") (unit 1) (value "10k") (footprint "")
     )
     (path "/4244f2cf-53fb-48c6-88ac-de581a83aeb5"
       (reference "U1") (unit 1) (value "NodeMCU1.0(ESP-12E)") (footprint "")
