@@ -1207,10 +1207,10 @@
     (property "Reference" "Q?" (id 0) (at 105.41 87.6299 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "" (id 1) (at 105.41 90.1699 0)
+    (property "Value" "BC517" (id 1) (at 105.41 90.1699 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (id 2) (at 105.41 90.805 0)
+    (property "Footprint" "Package_TO_SOT_THT:TO-92_Inline" (id 2) (at 105.41 90.805 0)
       (effects (font (size 1.27 1.27) italic) (justify left) hide)
     )
     (property "Datasheet" "https://www.onsemi.com/pub/Collateral/BC517-D74Z-D.PDF" (id 3) (at 100.33 88.9 0)
@@ -1717,7 +1717,7 @@
       (reference "R2") (unit 1) (value "3.3k") (footprint "")
     )
     (path "/dec3a3fc-aac1-4ba5-87a4-0f7cc72565ee"
-      (reference "R3") (unit 1) (value "3.3k") (footprint "")
+      (reference "R3") (unit 1) (value "5k") (footprint "")
     )
     (path "/4244f2cf-53fb-48c6-88ac-de581a83aeb5"
       (reference "U1") (unit 1) (value "NodeMCU1.0(ESP-12E)") (footprint "")
