@@ -53,7 +53,7 @@ pio remote run -t upload --force-remote
 
 ## Configuration
 
-Check http files at <control/common.http>
+Check http files at [http](./control/common.http)
 
 ## Test
 
