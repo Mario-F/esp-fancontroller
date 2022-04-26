@@ -51,6 +51,10 @@ Upload and Flash remote:
 pio remote run -t upload --force-remote
 ```
 
+## Configuration
+
+Check http files at <control/common.http>
+
 ## Test
 
 To use the http calls provided by the `test/` folder you can use vscode extension `REST Client` and this config under `.vscode/settings.json`:
