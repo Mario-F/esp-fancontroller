@@ -1,0 +1,63 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          {"type": "feat", "release": "minor"},
+          {"type": "fix", "release": "patch"},
+          {"type": "perf", "release": "patch"},
+          {"type": "docs", "release": "patch"},
+          {"type": "style", "release": "patch"},
+          {"type": "refactor", "release": "patch"},
+          {"type": "test", "release": "patch"},
+          {"type": "build", "release": "patch"},
+          {"type": "ci", "release": "patch"},
+          {"type": "*", "release": "patch"}
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            {"type": "fix", "hidden": false, "section": "Bug Fixes"},
+            {"type": "feat", "hidden": false, "section": "Features"},
+            {"type": "perf", "hidden": false, "section": "Performance Improvements"},
+            {"type": "revert", "hidden": false, "section": "Reverts"},
+            {"type": "docs", "hidden": false, "section": "Miscellaneous"},
+            {"type": "style", "hidden": false, "section": "Miscellaneous"},
+            {"type": "refactor", "hidden": false, "section": "Miscellaneous"},
+            {"type": "test", "hidden": false, "section": "Miscellaneous"},
+            {"type": "build", "hidden": false, "section": "Miscellaneous"},
+            {"type": "ci", "hidden": false, "section": "Miscellaneous"},
+            {"type": "", "hidden": false, "section": "Malformed Commits"}
+          ]
+        }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    "@semantic-release/npm",
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md",
+          "README.md",
+          "package.json"
+        ],
+        "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
