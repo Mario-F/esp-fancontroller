@@ -1,3 +1,15 @@
+## [1.0.1](https://github.com/Mario-F/esp-fancontroller/compare/v1.0.0...v1.0.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* **kicad:** create updated schematic ([54e13bb](https://github.com/Mario-F/esp-fancontroller/commit/54e13bb4d6108e2599d8c90c35eac1526ac92437))
+
+
+### Miscellaneous
+
+* **kicad:** moved schematic to root level ([8c5dbdd](https://github.com/Mario-F/esp-fancontroller/commit/8c5dbddbb45d0ad8417b20ad893cc7ea08e1907a))
+
 ## 1.0.0 (2022-05-22)
 
 
