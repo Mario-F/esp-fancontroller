@@ -2,7 +2,7 @@
 
 This is a simple project in development to provide a multi temperature sensor IoT device including a Fan Controller, the focus resides in providing a JSON HTTP interface for scrape and configure remotely.
 
-A example schematic can be viewed [here](./kicad/schematic.pdf)
+A example schematic can be viewed [here](./schematic.pdf)
 
 ## State of the Project
 
